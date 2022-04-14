@@ -1,0 +1,88 @@
+<html>
+    <body><center>
+        <h1>Student Details </h1>
+        <h2>Registration</h2>
+        
+        UserName: <input type="text" id="Uname"/><br><br>
+        RollNo: <input type="text" id="roll"/><br><br>
+        Password: <input type="password" id="password"/><br><br>
+        <button id="insert">INSERT</button>
+        <Button id="select">SELECT</Button>
+        <Button id="update">UPDATE</Button>
+        <Button id="clear">CLEAR</Button>
+        <Button id="delete">DELETE</Button>
+        <script  src="studentjs.js" type="module" >
+            
+        import{
+                getDatabase,
+                ref,
+                get,
+                set,
+                child,
+                update,
+                remove
+            } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"
+            const db=getDatabase();
+            var uBox=document.getElementById("Uname");
+            var rBox=document.getElementById("roll");
+            var pBox=document.getElementById("password");
+            var ibutton=document.getElementById("insert");
+            var sbutton=document.getElementById("select");
+            var ubutton=document.getElementById("update");
+            var cbutton=document.getElementById("clear");
+            var dbutton=document.getElementById("delete");
+            function insertdata(){
+                set(ref(db,"Student/"+rBox.value),{
+                    StdName:uBox.value,
+                    RollNo:rBox.value,
+                    password:pBox.value
+                }).then(()=>alert("Student details Inserted Sucessfully"))
+                .catch((err)=>alert("Student details not Inserted "+err))
+            }
+            function cleardata(){
+                uBox.value="";
+                rBox.value="";
+                pBox.value="";
+            }
+            function selectdata(){
+                const dbref=ref(db);
+                get(child(dbref,"Student/"+rBox.value))
+                .then((cdata)=>{
+                    if(cdata.exists()){
+                        uBox.value=cdata.val().StdName;
+                         rBox.value=cdata.val().RollNo;
+                        pBox.value=cdata.val().password;
+                    }
+                    else{ 
+                        alert("No data found");
+                    }
+                })
+                .catch((err)=>{
+                    alert("unsucesfull,error "+err);
+                });
+            }
+            function updatedata(){
+                update(ref(db,"Student/"+rBox.value),{
+                    StdName:uBox.value,
+                    RollNo:rBox.value,
+                    password:pBox.value
+                }).then(()=>alert("Student details Updated Sucessfully"))
+                .catch((err)=>alert("Student details not Updated "+err))
+                cleardata();
+            }
+            function deletedata(){
+                remove(ref(db,"Student/"+rBox.value),{
+                    
+                }).then(()=>alert("Student details Removed Sucessfully"))
+                .catch((err)=>alert("Student details not Removed "+err))
+                cleardata();
+            }
+            ibutton.addEventListener("click",insertdata);
+            cbutton.addEventListener("click",cleardata);
+            sbutton.addEventListener("click",selectdata);
+            ubutton.addEventListener("click",updatedata);
+            dbutton.addEventListener("click",deletedata);
+          </script>
+          </center> 
+    </body>
+</html>
